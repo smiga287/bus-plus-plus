@@ -1,0 +1,11 @@
+{
+  "name": "bus-plus-plus",
+  "version": "1.0.0",
+  "description": "A simple Express server for getting data about bus departures",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "smiga287",
+  "license": "ISC"
+}
