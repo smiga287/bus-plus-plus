@@ -1,4 +1,5 @@
 const express = require("express");
+const { query, validationResult } = require("express-validator/check");
 const { TimeTable } = require("../models/time_table");
 const router = express.Router();
 
@@ -57,29 +58,47 @@ function getNextArrival(timeTable) {
   return { hour: nextHour, minute: firstMinute };
 }
 
-router.get("/bus/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { json } = await TimeTable.findOne({ where: { bus_id: id } });
-    const bothDirections = JSON.parse(json); // get timetable for both directions
-
-    // TODO: add middleware to validate input
-    const { direction, nextArrival } = req.query;
-    // if got only direction --> return all departures in given direction
-    // if both direction and nextArrival are given --> return nextArrival
-    if (direction) {
-      const oneDirection = bothDirections[parseInt(direction)]; // ? direction can be 0 or 1
-      return res.send(
-        nextArrival ? getNextArrival(oneDirection) : oneDirection
-      );
+const DIRECTIONS = [0, 1];
+router.get(
+  "/bus/:id",
+  [
+    query("direction")
+      .toInt()
+      .isIn(DIRECTIONS)
+      .optional(),
+    query("nextArrival")
+      .toBoolean()
+      .optional()
+  ],
+  async (req, res) => {
+    // Finds the validation errors in req.query
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
     }
 
-    // if no params given --> return both time tables
-    res.send(bothDirections);
-  } catch (error) {
-    console.error(error);
-    res.status(404).send("The specified bus doesn't exist in the DB");
+    try {
+      const { id } = req.params;
+      const { json } = await TimeTable.findOne({ where: { bus_id: id } });
+      const bothDirections = JSON.parse(json); // get timetable for both directions
+
+      const { direction, nextArrival } = req.query;
+      // if got only direction --> return all departures in given direction
+      // if both direction and nextArrival are given --> return nextArrival
+      if (DIRECTIONS.includes(direction)) {
+        const oneDirection = bothDirections[direction]; // ? direction can be 0 or 1
+        return res.send(
+          nextArrival ? getNextArrival(oneDirection) : oneDirection
+        );
+      }
+
+      // if no params given --> return both time tables
+      res.send(bothDirections);
+    } catch (error) {
+      console.error(error);
+      res.status(404).send("The specified bus doesn't exist in the DB");
+    }
   }
-});
+);
 
 module.exports = router;
