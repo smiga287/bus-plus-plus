@@ -1,13 +1,13 @@
 const Sequelize = require("sequelize");
 const db = require("../config/db");
 
-const TimeTable = db.define(
+const Bus = db.define(
   "time_table",
   {
-    bus_id: { type: Sequelize.STRING },
+    name: { type: Sequelize.STRING },
     json: { type: Sequelize.STRING }
   },
   { freezeTableName: true }
 );
 
-module.exports = { TimeTable };
+module.exports = { Bus };

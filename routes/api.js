@@ -1,16 +1,17 @@
 const express = require("express");
 const { query, validationResult } = require("express-validator/check");
-const { TimeTable } = require("../models/time_table");
+const { Bus } = require("../models/bus");
 const router = express.Router();
 
+// * Gets all bus names
 router.get("/bus", async (req, res) => {
   try {
-    const tables = await TimeTable.findAll();
-    const names = tables.map(t => t.bus_id);
+    const buses = await Bus.findAll();
+    const names = buses.map(b => b.name);
     res.send(names);
   } catch (error) {
     console.error(error);
-    res.status(500).send("There are no busses in DB");
+    res.status(500).send("There are no buses in DB");
   }
 });
 
@@ -60,7 +61,7 @@ function getNextArrival(timeTable) {
 
 const DIRECTIONS = [0, 1];
 router.get(
-  "/bus/:id",
+  "/bus/:name",
   [
     query("direction")
       .toInt()
@@ -78,8 +79,8 @@ router.get(
     }
 
     try {
-      const { id } = req.params;
-      const { json } = await TimeTable.findOne({ where: { bus_id: id } });
+      const { name } = req.params;
+      const { json } = await Bus.findOne({ where: { name } });
       const bothDirections = JSON.parse(json); // get timetable for both directions
 
       const { direction, nextArrival } = req.query;
