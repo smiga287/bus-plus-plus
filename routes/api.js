@@ -16,10 +16,17 @@ router.get("/bus", async (req, res) => {
 });
 
 function getCurrentDayIdx(date) {
+  const WORK_DAYS = 0;
+  const SATURDAY = 1;
+  const SUNDAY = 2;
   const day = date.getDay();
-  if (day >= 1 && day <= 5) return 0;
-  else if (day === 6) return 1;
-  else return 2;
+  if (day >= 1 && day <= 5) {
+    return WORK_DAYS;
+  } else if (day === 6) {
+    return SATURDAY;
+  } else {
+    return SUNDAY;
+  }
 }
 
 function getNextArrival(timeTable) {
