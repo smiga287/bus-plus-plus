@@ -1,5 +1,5 @@
 # bus++
-A simple Express server for getting data about bus departures from Bus Plus i.e. Serbia's public transport system. Data is provided by the [bus-timeline](https://github.com/smiga287/bus-timeline/) package I wrote. 
+A simple Express server for getting data about bus departures from Bus Plus i.e. Belgrade's public transport system. Data is provided by the [bus-timeline](https://github.com/smiga287/bus-timeline/) package I wrote. 
 
 ---
 
